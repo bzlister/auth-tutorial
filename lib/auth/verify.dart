@@ -1,16 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:provider/provider.dart';
 import 'package:async/async.dart';
+import 'package:provider/provider.dart';
 
 import 'authentication_service.dart';
 
 class Verify extends StatefulWidget {
   final String email;
-  final AuthenticationService authenticationService;
 
-  const Verify({Key? key, required this.email, required this.authenticationService}) : super(key: key);
+  const Verify({Key? key, required this.email}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _VerifyState();
@@ -18,14 +17,16 @@ class Verify extends StatefulWidget {
 
 class _VerifyState extends State<Verify> {
   late RestartableTimer _checkVerifiedLoop;
+  late AuthenticationService _authenticationService;
 
   @override
   void initState() {
+    _authenticationService = context.read<AuthenticationService>();
     _checkVerifiedLoop = RestartableTimer(const Duration(seconds: 1), () async {
-      User? user = await widget.authenticationService.reload();
+      User? user = await _authenticationService.reload();
       if (user?.emailVerified ?? false) {
         _checkVerifiedLoop.cancel();
-        widget.authenticationService.pushToStream(user);
+        _authenticationService.pushToStream(user);
       } else {
         _checkVerifiedLoop.reset();
       }
@@ -73,7 +74,7 @@ class _VerifyState extends State<Verify> {
                     child: const Text("Resend verification link"),
                     onPressed: () async {
                       context.loaderOverlay.show();
-                      await widget.authenticationService.sendVerificationEmail();
+                      await _authenticationService.sendVerificationEmail();
                       _checkVerifiedLoop.reset();
                       context.loaderOverlay.hide();
                     },
@@ -87,7 +88,7 @@ class _VerifyState extends State<Verify> {
           onPressed: () async {
             context.loaderOverlay.show();
             _checkVerifiedLoop.cancel();
-            await widget.authenticationService.signOut();
+            await _authenticationService.signOut();
             context.loaderOverlay.hide();
           },
           child: const Text("Sign out"),
