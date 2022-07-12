@@ -13,21 +13,22 @@ class AuthenticationWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<AuthenticationService>(
-          create: (_) => AuthenticationService(),
-        ),
-        StreamProvider<User?>(
-          create: (context) => context.read<AuthenticationService>().authStateChanges,
-          initialData: null,
-        ),
-      ],
-      child: ((User? user) => user != null
-          ? user.emailVerified
-              ? Home(databaseService: DatabaseService(user: user))
-              : Verify(email: user.email!)
-          : const Unauthenticated())(context.watch<User?>()),
+    return Provider<AuthenticationService>(
+      create: (_) => AuthenticationService(),
+      builder: (context, child) => StreamBuilder<User?>(
+        stream: context.read<AuthenticationService>().authStateChanges,
+        builder: (context, state) {
+          User? user = state.data;
+          return user != null
+              ? user.emailVerified
+                  ? Provider<DatabaseService>(
+                      create: (_) => DatabaseService(user: user),
+                      child: const Home(),
+                    )
+                  : Verify(email: user.email!)
+              : const Unauthenticated();
+        },
+      ),
     );
   }
 }

@@ -2,20 +2,30 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:collection/collection.dart';
 
+import 'models/record.dart';
 import 'models/task.dart';
 
 class DatabaseService {
   final DatabaseReference _databaseReference;
-  late Stream<List<Task>> _taskList;
+  late Stream<List<Record<Task>>> taskList;
 
   DatabaseService({required User user}) : _databaseReference = FirebaseDatabase.instance.ref("users/${user.uid}") {
-    _taskList = _databaseReference.onValue.asyncMap((event) => event.snapshot.value).cast<List<Task>>();
+    taskList = _databaseReference.onValue
+        .map((event) => event.snapshot.children.whereNotNull().map((e) => Record<Task>.fromJson(e, Task.fromJson)).toList())
+        .handleError((error) => print(error));
   }
 
-  Stream<List<Task>> get taskList => _taskList;
+  Future<void> addTask(Task task) async {
+    await _databaseReference.push().set(task.toJson());
+  }
 
-  void addTask(Task task) {
-    _databaseReference.push().set(task);
+  Future<void> updateTask(String id, Task task) async {
+    await _databaseReference.update({id: task.toJson()});
+  }
+
+  Future<void> deleteTask(String id) async {
+    await _databaseReference.update({id: null});
   }
 }

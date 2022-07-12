@@ -61,12 +61,11 @@ class _VerifyState extends State<Verify> {
                       style: TextStyle(fontSize: 24),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    'We\'ve sent a verification email to ${widget.email}. Please click the link in the email body to get started!',
-                    textAlign: TextAlign.center,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, bottom: 10),
+                    child: Text(
+                      'We\'ve sent a verification email to ${widget.email}. Please click the link in the email body to get started!',
+                    ),
                   ),
                   const SizedBox(height: 4),
                   const Divider(),
