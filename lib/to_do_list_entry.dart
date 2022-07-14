@@ -1,5 +1,6 @@
 import 'package:auth_tutorial/database_service.dart';
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import 'models/task.dart';
@@ -17,21 +18,52 @@ class ToDoListEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CheckboxListTile(
-      contentPadding: EdgeInsets.zero,
-      controlAffinity: ListTileControlAffinity.leading,
-      value: task.completed,
-      onChanged: (checked) {
-        _focusNode.unfocus();
-        context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!));
-      },
-      title: TextField(
-        focusNode: _focusNode,
-        controller: _controller,
-        onSubmitted: (val) => context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed)),
-        style: TextStyle(decoration: task.completed ? TextDecoration.lineThrough : null),
+    return ListTile(
+      leading: Checkbox(
+        activeColor: Colors.blue,
+        value: task.completed,
+        onChanged: (checked) {
+          _focusNode.unfocus();
+          context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!));
+        },
       ),
-      secondary: IconButton(onPressed: () => context.read<DatabaseService>().deleteTask(id), icon: const Icon(Icons.delete)),
+      contentPadding: EdgeInsets.zero,
+      title: GestureDetector(
+        onLongPress: () => showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Delete task?"),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text("Cancel")),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.loaderOverlay.show();
+                  context.read<DatabaseService>().deleteTask(id).then((value) => context.loaderOverlay.hide());
+                },
+                child: const Text("Delete"),
+              ),
+            ],
+          ),
+        ),
+        onTap: () => _focusNode.requestFocus(),
+        child: Container(
+          color: Colors.transparent,
+          child: IgnorePointer(
+            child: TextField(
+              cursorColor: Colors.white,
+              focusNode: _focusNode,
+              controller: _controller,
+              onSubmitted: (val) {
+                if (val.isNotEmpty) {
+                  context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed));
+                }
+              },
+              style: TextStyle(decoration: task.completed ? TextDecoration.lineThrough : null, color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

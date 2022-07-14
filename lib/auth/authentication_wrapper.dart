@@ -23,7 +23,7 @@ class AuthenticationWrapper extends StatelessWidget {
               ? user.emailVerified
                   ? Provider<DatabaseService>(
                       create: (_) => DatabaseService(user: user),
-                      child: const Home(),
+                      child: Home(email: user.email!),
                     )
                   : Verify(email: user.email!)
               : const Unauthenticated();
