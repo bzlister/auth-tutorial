@@ -58,21 +58,13 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  "Log in",
-                  style: TextStyle(fontSize: 24),
-                ),
-              ),
               const GoogleSignInButton(),
               const Divider(),
               if (_serviceErrorCode != null) ...[

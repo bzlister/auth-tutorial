@@ -1,4 +1,5 @@
 import 'package:auth_tutorial/database_service.dart';
+import 'package:auth_tutorial/main.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -36,10 +37,11 @@ class ToDoListEntry extends StatelessWidget {
             actions: [
               TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text("Cancel")),
               TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
+                onPressed: () async {
                   context.loaderOverlay.show();
-                  context.read<DatabaseService>().deleteTask(id).then((value) => context.loaderOverlay.hide());
+                  await context.read<DatabaseService>().deleteTask(id);
+                  context.loaderOverlay.hide();
+                  navigatorKey.currentState?.pop();
                 },
                 child: const Text("Delete"),
               ),
@@ -54,9 +56,9 @@ class ToDoListEntry extends StatelessWidget {
               cursorColor: Colors.white,
               focusNode: _focusNode,
               controller: _controller,
-              onSubmitted: (val) {
+              onSubmitted: (val) async {
                 if (val.isNotEmpty) {
-                  context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed));
+                  await context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed));
                 }
               },
               style: TextStyle(decoration: task.completed ? TextDecoration.lineThrough : null, color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
