@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/src/provider.dart';
 
-import 'authentication_service.dart';
+import '../services/authentication_service.dart';
 import 'social/google_sign_in_button.dart';
 
 class SignUp extends StatefulWidget {
@@ -224,7 +224,6 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(40),

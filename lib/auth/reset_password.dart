@@ -1,14 +1,14 @@
+import 'package:auth_tutorial/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-import 'authentication_service.dart';
+import '../services/authentication_service.dart';
+import '../services/service_utils.dart';
 
 class ResetPassword extends StatefulWidget {
   final _emailController = TextEditingController();
   final _emailValidationKey = GlobalKey<FormState>();
-  final _btnController = RoundedLoadingButtonController();
 
   ResetPassword({Key? key}) : super(key: key);
 
@@ -137,36 +137,32 @@ class _ResetPasswordState extends State<ResetPassword> {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 5),
-                child: RoundedLoadingButton(
+                child: SizedBox(
                   height: 40,
-                  loaderSize: 20,
-                  controller: widget._btnController,
-                  onPressed: () async {
-                    if (widget._emailValidationKey.currentState!.validate()) {
-                      try {
-                        await context.read<AuthenticationService>().sendResetPasswordEmail(widget._emailController.text.trim());
-                        setState(() {
-                          _status = Status.emailSent;
-                        });
-                        widget._btnController.success();
-                      } on FirebaseAuthException catch (e) {
-                        widget._btnController.reset();
-                        setState(() {
-                          _serviceErrorCode = e.code;
-                        });
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (widget._emailValidationKey.currentState!.validate()) {
+                        try {
+                          await withSpinner(() => context.read<AuthenticationService>().sendResetPasswordEmail(widget._emailController.text.trim()), context);
+                          setState(() {
+                            _status = Status.emailSent;
+                          });
+                        } on FirebaseAuthException catch (e) {
+                          setState(() {
+                            _serviceErrorCode = e.code;
+                          });
+                        }
                       }
-                    } else {
-                      widget._btnController.reset();
-                    }
-                  },
-                  child: const Text("Send"),
+                    },
+                    child: const Text("Send"),
+                  ),
                 ),
               ),
             ] else if (_status == Status.emailSent) ...[
               Text("We've sent an email containing a link to reset your password to ${widget._emailController.text.trim()}"),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    navigatorKey.currentState?.pop();
                   },
                   child: const Text("Log in"))
             ],

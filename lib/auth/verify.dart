@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:async/async.dart';
 import 'package:provider/provider.dart';
 
-import 'authentication_service.dart';
+import '../services/authentication_service.dart';
+import '../services/service_utils.dart';
 
 class Verify extends StatefulWidget {
   final String email;
@@ -72,10 +72,8 @@ class _VerifyState extends State<Verify> {
                   TextButton(
                     child: const Text("Resend verification link"),
                     onPressed: () async {
-                      context.loaderOverlay.show();
-                      await _authenticationService.sendVerificationEmail();
+                      await withSpinner(_authenticationService.sendVerificationEmail, context);
                       _checkVerifiedLoop.reset();
-                      context.loaderOverlay.hide();
                     },
                   ),
                 ],
@@ -85,10 +83,8 @@ class _VerifyState extends State<Verify> {
         ),
         TextButton(
           onPressed: () async {
-            context.loaderOverlay.show();
             _checkVerifiedLoop.cancel();
-            await _authenticationService.signOut();
-            context.loaderOverlay.hide();
+            await withSpinner(_authenticationService.signOut, context);
           },
           child: const Text("Sign out"),
         )

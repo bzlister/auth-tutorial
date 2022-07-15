@@ -5,7 +5,8 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
-import 'authentication_service.dart';
+import '../services/authentication_service.dart';
+import '../services/service_utils.dart';
 
 class AccountButton extends StatelessWidget {
   final String email;
@@ -29,9 +30,7 @@ class AccountButton extends StatelessWidget {
           child: Center(
             child: TextButton(
               onPressed: () async {
-                context.loaderOverlay.show();
-                await context.read<AuthenticationService>().signOut();
-                context.loaderOverlay.hide();
+                await withSpinner(context.read<AuthenticationService>().signOut, context);
                 navigatorKey.currentState?.pop();
               },
               child: const Text(

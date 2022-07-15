@@ -1,7 +1,8 @@
+import 'package:auth_tutorial/services/service_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'database_service.dart';
+import 'services/database_service.dart';
 import 'models/record.dart';
 import 'models/task.dart';
 import 'to_do_list_entry.dart';
@@ -25,7 +26,7 @@ class ToDoList extends StatelessWidget {
                   style: const TextStyle(color: Colors.white),
                   onSubmitted: (val) async {
                     if (val.isNotEmpty) {
-                      context.read<DatabaseService>().addTask(Task(description: val));
+                      await withSpinner(() => context.read<DatabaseService>().addTask(Task(description: val)), context);
                     }
                   },
                 )

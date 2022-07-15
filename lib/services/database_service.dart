@@ -4,8 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:collection/collection.dart';
 
-import 'models/record.dart';
-import 'models/task.dart';
+import '../models/record.dart';
+import '../models/task.dart';
 
 class DatabaseService {
   final DatabaseReference _databaseReference;

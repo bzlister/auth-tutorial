@@ -20,41 +20,46 @@ class _UnauthenticatedState extends State<Unauthenticated> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(child: Text(_mode == Mode.signUp ? "Create an account" : "Log in", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: _mode == Mode.signUp ? SignUp() : SignIn(),
-          ),
-          Row(
+    return Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 30),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: _mode == Mode.signUp
-                ? [
-                    const Text("Have an account?"),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _mode = Mode.signIn;
-                        });
-                      },
-                      child: const Text("Log in"),
-                    ),
-                  ]
-                : [
-                    const Text("No account?"),
-                    TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _mode = Mode.signUp;
-                          });
-                        },
-                        child: const Text("Sign up"))
-                  ],
-          )
-        ],
+            children: [
+              Center(child: Text(_mode == Mode.signUp ? "Create an account" : "Log in", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold))),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: _mode == Mode.signUp ? SignUp() : SignIn(),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: _mode == Mode.signUp
+                    ? [
+                        const Text("Have an account?"),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _mode = Mode.signIn;
+                            });
+                          },
+                          child: const Text("Log in"),
+                        ),
+                      ]
+                    : [
+                        const Text("No account?"),
+                        TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _mode = Mode.signUp;
+                              });
+                            },
+                            child: const Text("Sign up"))
+                      ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }

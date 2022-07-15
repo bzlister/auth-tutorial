@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/src/provider.dart';
 
-import 'authentication_service.dart';
+import '../services/authentication_service.dart';
+import '../services/service_utils.dart';
 import 'reset_password.dart';
 import 'social/google_sign_in_button.dart';
 
@@ -208,17 +208,17 @@ class _SignInState extends State<SignIn> {
                 onPressed: () async {
                   if (widget._emailValidationKey.currentState!.validate() && widget._passwordValidationKey.currentState!.validate()) {
                     try {
-                      context.loaderOverlay.show();
-                      await context.read<AuthenticationService>().signIn(
-                            email: widget._emailController.text.trim(),
-                            password: widget._passwordController.text.trim(),
-                          );
+                      await withSpinner(
+                        () => context.read<AuthenticationService>().signIn(
+                              email: widget._emailController.text.trim(),
+                              password: widget._passwordController.text.trim(),
+                            ),
+                        context,
+                      );
                     } on FirebaseAuthException catch (e) {
                       setState(() {
                         _serviceErrorCode = e.code;
                       });
-                    } finally {
-                      context.loaderOverlay.hide();
                     }
                   }
                 },

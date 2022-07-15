@@ -1,5 +1,6 @@
-import 'package:auth_tutorial/database_service.dart';
+import 'package:auth_tutorial/services/database_service.dart';
 import 'package:auth_tutorial/main.dart';
+import 'package:auth_tutorial/services/service_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
@@ -23,9 +24,9 @@ class ToDoListEntry extends StatelessWidget {
       leading: Checkbox(
         activeColor: Colors.blue,
         value: task.completed,
-        onChanged: (checked) {
+        onChanged: (checked) async {
           _focusNode.unfocus();
-          context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!));
+          await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!)), context);
         },
       ),
       contentPadding: EdgeInsets.zero,
@@ -38,9 +39,7 @@ class ToDoListEntry extends StatelessWidget {
               TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text("Cancel")),
               TextButton(
                 onPressed: () async {
-                  context.loaderOverlay.show();
-                  await context.read<DatabaseService>().deleteTask(id);
-                  context.loaderOverlay.hide();
+                  await withSpinner(() => context.read<DatabaseService>().deleteTask(id), context);
                   navigatorKey.currentState?.pop();
                 },
                 child: const Text("Delete"),
@@ -58,7 +57,7 @@ class ToDoListEntry extends StatelessWidget {
               controller: _controller,
               onSubmitted: (val) async {
                 if (val.isNotEmpty) {
-                  await context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed));
+                  await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed)), context);
                 }
               },
               style: TextStyle(decoration: task.completed ? TextDecoration.lineThrough : null, color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
