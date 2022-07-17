@@ -17,16 +17,15 @@ class Verify extends StatefulWidget {
 
 class _VerifyState extends State<Verify> {
   late RestartableTimer _checkVerifiedLoop;
-  late AuthenticationService _authenticationService;
 
   @override
   void initState() {
-    _authenticationService = context.read<AuthenticationService>();
     _checkVerifiedLoop = RestartableTimer(const Duration(seconds: 1), () async {
-      User? user = await _authenticationService.reload();
+      AuthenticationService authenticationService = context.read<AuthenticationService>();
+      User? user = await authenticationService.reload();
       if (user?.emailVerified ?? false) {
         _checkVerifiedLoop.cancel();
-        _authenticationService.pushToStream(user);
+        authenticationService.pushToStream(user);
       } else {
         _checkVerifiedLoop.reset();
       }
@@ -72,7 +71,7 @@ class _VerifyState extends State<Verify> {
                   TextButton(
                     child: const Text("Resend verification link"),
                     onPressed: () async {
-                      await withSpinner(_authenticationService.sendVerificationEmail, context);
+                      await withSpinner(context.read<AuthenticationService>().sendVerificationEmail, context);
                       _checkVerifiedLoop.reset();
                     },
                   ),
@@ -84,7 +83,7 @@ class _VerifyState extends State<Verify> {
         TextButton(
           onPressed: () async {
             _checkVerifiedLoop.cancel();
-            await withSpinner(_authenticationService.signOut, context);
+            await withSpinner(context.read<AuthenticationService>().signOut, context);
           },
           child: const Text("Sign out"),
         )

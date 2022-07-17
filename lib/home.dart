@@ -37,8 +37,8 @@ class Home extends StatelessWidget {
                 topRight: Radius.circular(80),
               ),
             ),
-            child: const Padding(
-              padding: EdgeInsets.only(left: 10, right: 15, bottom: 5, top: 15),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10, right: 15, bottom: 5, top: 15),
               child: ToDoList(),
             ),
           ),

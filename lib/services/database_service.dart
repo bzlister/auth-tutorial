@@ -14,7 +14,7 @@ class DatabaseService {
   DatabaseService({required User user}) : _databaseReference = FirebaseDatabase.instance.ref("users/${user.uid}") {
     taskList = _databaseReference.onValue
         .map((event) => event.snapshot.children.whereNotNull().map((e) => Record<Task>.fromJson(e, Task.fromJson)).toList())
-        .handleError((error) => print(error));
+        .handleError((err) => print('database service error ${err}'));
   }
 
   Future<void> addTask(Task task) async {

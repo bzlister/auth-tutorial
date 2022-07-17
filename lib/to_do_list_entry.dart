@@ -39,8 +39,8 @@ class ToDoListEntry extends StatelessWidget {
               TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text("Cancel")),
               TextButton(
                 onPressed: () async {
-                  await withSpinner(() => context.read<DatabaseService>().deleteTask(id), context);
                   navigatorKey.currentState?.pop();
+                  await context.read<DatabaseService>().deleteTask(id);
                 },
                 child: const Text("Delete"),
               ),
@@ -56,7 +56,7 @@ class ToDoListEntry extends StatelessWidget {
               focusNode: _focusNode,
               controller: _controller,
               onSubmitted: (val) async {
-                if (val.isNotEmpty) {
+                if (val.isNotEmpty && val.length < 50) {
                   await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed)), context);
                 }
               },

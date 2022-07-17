@@ -8,31 +8,43 @@ import 'models/task.dart';
 import 'to_do_list_entry.dart';
 
 class ToDoList extends StatelessWidget {
-  const ToDoList({Key? key}) : super(key: key);
+  final TextEditingController _controller;
+
+  ToDoList({Key? key})
+      : _controller = TextEditingController(),
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<Record<Task>>>(
-        stream: context.read<DatabaseService>().taskList,
-        builder: (context, state) {
-          List<Record<Task>> tasks = state.data ?? <Record<Task>>[];
-          return SingleChildScrollView(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ...tasks.map((t) => ToDoListEntry(task: t.data, id: t.id)),
-                TextField(
-                  cursorColor: Colors.white,
-                  style: const TextStyle(color: Colors.white),
-                  onSubmitted: (val) async {
-                    if (val.isNotEmpty) {
-                      await withSpinner(() => context.read<DatabaseService>().addTask(Task(description: val)), context);
-                    }
-                  },
-                )
-              ],
-            ),
-          );
-        });
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          StreamBuilder<List<Record<Task>>>(
+              stream: context.read<DatabaseService>().taskList,
+              builder: (context, state) {
+                if (state.hasError) {
+                  return const Text("We've encountered an error. Please try again later.");
+                }
+                List<Record<Task>> tasks = state.data ?? <Record<Task>>[];
+                return ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: tasks.length,
+                  itemBuilder: (context, i) => ToDoListEntry(key: Key(tasks[i].id), task: tasks[i].data, id: tasks[i].id),
+                );
+              }),
+          TextField(
+            cursorColor: Colors.white,
+            style: const TextStyle(color: Colors.white),
+            controller: _controller,
+            onSubmitted: (val) async {
+              if (val.isNotEmpty && val.length < 50) {
+                await withSpinner(() => context.read<DatabaseService>().addTask(Task(description: val)), context);
+                _controller.clear();
+              }
+            },
+          )
+        ],
+      ),
+    );
   }
 }

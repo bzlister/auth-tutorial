@@ -6,7 +6,7 @@ class AuthenticationService {
   final StreamController<User?> _streamController;
 
   AuthenticationService() : _streamController = StreamController() {
-    FirebaseAuth.instance.authStateChanges().listen((event) {
+    FirebaseAuth.instance.authStateChanges().handleError((err) => print('auth service error ${err}')).listen((event) {
       _streamController.add(event);
     });
   }

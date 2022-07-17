@@ -161,10 +161,11 @@ class _ResetPasswordState extends State<ResetPassword> {
             ] else if (_status == Status.emailSent) ...[
               Text("We've sent an email containing a link to reset your password to ${widget._emailController.text.trim()}"),
               ElevatedButton(
-                  onPressed: () {
-                    navigatorKey.currentState?.pop();
-                  },
-                  child: const Text("Log in"))
+                onPressed: () {
+                  navigatorKey.currentState?.pop();
+                },
+                child: const Text("Log in"),
+              ),
             ],
           ])),
     );

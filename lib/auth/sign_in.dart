@@ -71,21 +71,22 @@ class _SignInState extends State<SignIn> {
                 Padding(
                   padding: const EdgeInsets.only(top: 5),
                   child: MaterialBanner(
-                      content: Text(
-                        getServiceErrorMessage(_serviceErrorCode!),
-                      ),
-                      backgroundColor: Colors.red.withOpacity(0.5),
-                      actions: [
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _serviceErrorCode = null;
-                            });
-                          },
-                          icon: const Icon(Icons.close),
-                        )
-                      ]),
-                )
+                    content: Text(
+                      getServiceErrorMessage(_serviceErrorCode!),
+                    ),
+                    backgroundColor: Colors.red.withOpacity(0.5),
+                    actions: [
+                      IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _serviceErrorCode = null;
+                          });
+                        },
+                        icon: const Icon(Icons.close),
+                      )
+                    ],
+                  ),
+                ),
               ],
               const SizedBox(height: 15),
               Focus(

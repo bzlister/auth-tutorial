@@ -4,14 +4,9 @@ import 'package:provider/provider.dart';
 import '../../services/authentication_service.dart';
 import '../../services/service_utils.dart';
 
-class GoogleSignInButton extends StatefulWidget {
+class GoogleSignInButton extends StatelessWidget {
   const GoogleSignInButton({Key? key}) : super(key: key);
 
-  @override
-  _GoogleSignInButtonState createState() => _GoogleSignInButtonState();
-}
-
-class _GoogleSignInButtonState extends State<GoogleSignInButton> {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
