@@ -25,7 +25,7 @@ class ToDoListEntry extends StatelessWidget {
         value: task.completed,
         onChanged: (checked) async {
           _focusNode.unfocus();
-          await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!)));
+          await context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!));
         },
       ),
       contentPadding: EdgeInsets.zero,
@@ -56,7 +56,7 @@ class ToDoListEntry extends StatelessWidget {
               controller: _controller,
               onSubmitted: (val) async {
                 if (val.isNotEmpty && val.length < 50) {
-                  await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed)));
+                  await context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed));
                 }
               },
               style: TextStyle(decoration: task.completed ? TextDecoration.lineThrough : null, color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),

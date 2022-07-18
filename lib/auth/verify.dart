@@ -71,7 +71,7 @@ class _VerifyState extends State<Verify> {
                   TextButton(
                     child: const Text("Resend verification link"),
                     onPressed: () async {
-                      await withSpinner(context.read<AuthenticationService>().sendVerificationEmail);
+                      await context.read<AuthenticationService>().sendVerificationEmail();
                       _checkVerifiedLoop.reset();
                     },
                   ),
@@ -83,7 +83,7 @@ class _VerifyState extends State<Verify> {
         TextButton(
           onPressed: () async {
             _checkVerifiedLoop.cancel();
-            await withSpinner(context.read<AuthenticationService>().signOut);
+            await context.read<AuthenticationService>().signOut();
           },
           child: const Text("Sign out"),
         )

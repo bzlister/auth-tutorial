@@ -19,7 +19,7 @@ class GoogleSignInButton extends StatelessWidget {
         ),
       ),
       onPressed: () async {
-        await withSpinner(context.read<AuthenticationService>().signInWithGoogle, useDarkOverlay: true);
+        await context.read<AuthenticationService>().signInWithGoogle();
       },
       child: SizedBox(
         height: 40,

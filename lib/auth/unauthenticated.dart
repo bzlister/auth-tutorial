@@ -1,6 +1,7 @@
-import 'package:auth_tutorial/auth/sign_in.dart';
-import 'package:auth_tutorial/auth/sign_up.dart';
 import 'package:flutter/material.dart';
+
+import 'sign_in.dart';
+import 'sign_up.dart';
 
 class Unauthenticated extends StatefulWidget {
   const Unauthenticated({Key? key}) : super(key: key);

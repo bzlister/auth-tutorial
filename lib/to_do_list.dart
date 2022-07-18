@@ -38,7 +38,7 @@ class ToDoList extends StatelessWidget {
             controller: _controller,
             onSubmitted: (val) async {
               if (val.isNotEmpty && val.length < 50) {
-                await withSpinner(() => context.read<DatabaseService>().addTask(Task(description: val)));
+                await context.read<DatabaseService>().addTask(Task(description: val));
                 _controller.clear();
               }
             },

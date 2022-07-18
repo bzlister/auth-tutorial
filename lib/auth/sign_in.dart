@@ -209,12 +209,10 @@ class _SignInState extends State<SignIn> {
                 onPressed: () async {
                   if (widget._emailValidationKey.currentState!.validate() && widget._passwordValidationKey.currentState!.validate()) {
                     try {
-                      await withSpinner(
-                          () => context.read<AuthenticationService>().signIn(
-                                email: widget._emailController.text.trim(),
-                                password: widget._passwordController.text.trim(),
-                              ),
-                          useDarkOverlay: true);
+                      await context.read<AuthenticationService>().signIn(
+                            email: widget._emailController.text.trim(),
+                            password: widget._passwordController.text.trim(),
+                          );
                     } on FirebaseAuthException catch (e) {
                       setState(() {
                         _serviceErrorCode = e.code;

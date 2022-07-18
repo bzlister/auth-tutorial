@@ -29,7 +29,7 @@ class AccountButton extends StatelessWidget {
           child: Center(
             child: TextButton(
               onPressed: () async {
-                await withSpinner(context.read<AuthenticationService>().signOut);
+                await context.read<AuthenticationService>().signOut();
                 navigatorKey.currentState?.pop();
               },
               child: const Text(

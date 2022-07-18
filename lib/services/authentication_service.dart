@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'service_utils.dart';
+
 class AuthenticationService {
   final StreamController<User?> _streamController;
 
@@ -18,7 +20,7 @@ class AuthenticationService {
   }
 
   Future<void> signIn({required String email, required String password}) async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+    await withSpinner(() => FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password), useDarkOverlay: true);
   }
 
   Future<UserCredential> signInWithGoogle() async {
@@ -39,24 +41,30 @@ class AuthenticationService {
   }
 
   Future<void> signUp({required String email, required String password}) async {
-    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-    await userCredential.user?.sendEmailVerification();
+    await withSpinner(() async {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      await userCredential.user?.sendEmailVerification();
+    }, useDarkOverlay: true);
   }
 
   Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await withSpinner(FirebaseAuth.instance.signOut, useDarkOverlay: true);
   }
 
   Future<void> deleteAccount() async {
-    await FirebaseAuth.instance.currentUser?.delete();
+    if (FirebaseAuth.instance.currentUser != null) {
+      await withSpinner(FirebaseAuth.instance.currentUser!.delete, useDarkOverlay: true);
+    }
   }
 
   Future<void> sendVerificationEmail() async {
-    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+    if (FirebaseAuth.instance.currentUser != null) {
+      await withSpinner(FirebaseAuth.instance.currentUser!.sendEmailVerification);
+    }
   }
 
   Future<void> sendResetPasswordEmail(String email) async {
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    await withSpinner(() => FirebaseAuth.instance.sendPasswordResetEmail(email: email));
   }
 
   Future<User?> reload() async {

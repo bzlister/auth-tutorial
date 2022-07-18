@@ -1,12 +1,12 @@
-import 'package:auth_tutorial/auth/unauthenticated.dart';
-import 'package:auth_tutorial/auth/verify.dart';
-import 'package:auth_tutorial/services/database_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../home.dart';
 import '../services/authentication_service.dart';
+import '../services/database_service.dart';
+import 'unauthenticated.dart';
+import 'verify.dart';
 
 class AuthenticationWrapper extends StatelessWidget {
   const AuthenticationWrapper({Key? key}) : super(key: key);

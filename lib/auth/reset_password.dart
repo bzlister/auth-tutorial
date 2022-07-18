@@ -1,8 +1,8 @@
-import 'package:auth_tutorial/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../main.dart';
 import '../services/authentication_service.dart';
 import '../services/service_utils.dart';
 
@@ -143,7 +143,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                     onPressed: () async {
                       if (widget._emailValidationKey.currentState!.validate()) {
                         try {
-                          await withSpinner(() => context.read<AuthenticationService>().sendResetPasswordEmail(widget._emailController.text.trim()));
+                          await context.read<AuthenticationService>().sendResetPasswordEmail(widget._emailController.text.trim());
                           setState(() {
                             _status = Status.emailSent;
                           });

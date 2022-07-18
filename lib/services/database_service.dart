@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 
 import '../models/record.dart';
 import '../models/task.dart';
+import 'service_utils.dart';
 
 class DatabaseService {
   final DatabaseReference _databaseReference;
@@ -18,14 +19,14 @@ class DatabaseService {
   }
 
   Future<void> addTask(Task task) async {
-    await _databaseReference.push().set(task.toJson());
+    await withSpinner(() => _databaseReference.push().set(task.toJson()));
   }
 
   Future<void> updateTask(String id, Task task) async {
-    await _databaseReference.update({id: task.toJson()});
+    await withSpinner(() => _databaseReference.update({id: task.toJson()}));
   }
 
   Future<void> deleteTask(String id) async {
-    await _databaseReference.update({id: null});
+    await withSpinner(() => _databaseReference.update({id: null}));
   }
 }

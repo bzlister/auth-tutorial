@@ -1,9 +1,9 @@
-import 'package:auth_tutorial/services/service_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
 import '../services/authentication_service.dart';
+import '../services/service_utils.dart';
 import 'social/google_sign_in_button.dart';
 
 class SignUp extends StatefulWidget {
@@ -231,12 +231,10 @@ class _SignUpState extends State<SignUp> {
               onPressed: () async {
                 if (widget._emailValidationKey.currentState!.validate() && widget._passwordValidationKey.currentState!.validate()) {
                   try {
-                    await withSpinner(
-                        () => context.read<AuthenticationService>().signUp(
-                              email: widget._emailController.text.trim(),
-                              password: widget._passwordController.text.trim(),
-                            ),
-                        useDarkOverlay: true);
+                    await context.read<AuthenticationService>().signUp(
+                          email: widget._emailController.text.trim(),
+                          password: widget._passwordController.text.trim(),
+                        );
                   } on FirebaseAuthException catch (e) {
                     setState(() {
                       _serviceErrorCode = e.code;
