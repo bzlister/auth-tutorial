@@ -1,6 +1,6 @@
 import 'package:auth_tutorial/auth/authentication_wrapper.dart';
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -26,8 +26,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
       ),
       home: const Scaffold(
-        body: LoaderOverlay(child: AuthenticationWrapper()),
+        body: AuthenticationWrapper(),
       ),
+      builder: EasyLoading.init(),
     );
   }
 }

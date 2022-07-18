@@ -1,6 +1,6 @@
+import 'package:auth_tutorial/services/service_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/src/provider.dart';
 
 import '../services/authentication_service.dart';
@@ -231,17 +231,16 @@ class _SignUpState extends State<SignUp> {
               onPressed: () async {
                 if (widget._emailValidationKey.currentState!.validate() && widget._passwordValidationKey.currentState!.validate()) {
                   try {
-                    context.loaderOverlay.show();
-                    context.read<AuthenticationService>().signUp(
-                          email: widget._emailController.text.trim(),
-                          password: widget._passwordController.text.trim(),
-                        );
+                    await withSpinner(
+                        () => context.read<AuthenticationService>().signUp(
+                              email: widget._emailController.text.trim(),
+                              password: widget._passwordController.text.trim(),
+                            ),
+                        useDarkOverlay: true);
                   } on FirebaseAuthException catch (e) {
                     setState(() {
                       _serviceErrorCode = e.code;
                     });
-                  } finally {
-                    context.loaderOverlay.hide();
                   }
                 }
               },

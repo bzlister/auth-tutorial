@@ -2,7 +2,6 @@ import 'package:auth_tutorial/services/database_service.dart';
 import 'package:auth_tutorial/main.dart';
 import 'package:auth_tutorial/services/service_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import 'models/task.dart';
@@ -26,7 +25,7 @@ class ToDoListEntry extends StatelessWidget {
         value: task.completed,
         onChanged: (checked) async {
           _focusNode.unfocus();
-          await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!)), context);
+          await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!)));
         },
       ),
       contentPadding: EdgeInsets.zero,
@@ -57,7 +56,7 @@ class ToDoListEntry extends StatelessWidget {
               controller: _controller,
               onSubmitted: (val) async {
                 if (val.isNotEmpty && val.length < 50) {
-                  await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed)), context);
+                  await withSpinner(() => context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed)));
                 }
               },
               style: TextStyle(decoration: task.completed ? TextDecoration.lineThrough : null, color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),

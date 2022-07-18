@@ -143,7 +143,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                     onPressed: () async {
                       if (widget._emailValidationKey.currentState!.validate()) {
                         try {
-                          await withSpinner(() => context.read<AuthenticationService>().sendResetPasswordEmail(widget._emailController.text.trim()), context);
+                          await withSpinner(() => context.read<AuthenticationService>().sendResetPasswordEmail(widget._emailController.text.trim()));
                           setState(() {
                             _status = Status.emailSent;
                           });

@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-Future<T> withSpinner<T>(Future<T> Function() fn, BuildContext context) async {
-  context.loaderOverlay.show();
+Future<T> withSpinner<T>(Future<T> Function() fn, {bool useDarkOverlay = false}) async {
+  EasyLoading.show(
+    dismissOnTap: false,
+    maskType: useDarkOverlay ? EasyLoadingMaskType.black : EasyLoadingMaskType.clear,
+    indicator: const CircularProgressIndicator(),
+  );
   try {
     return await fn();
   } finally {
-    context.loaderOverlay.hide();
+    EasyLoading.dismiss();
   }
 }

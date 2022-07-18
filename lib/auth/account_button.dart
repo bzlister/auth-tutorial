@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
@@ -30,7 +29,7 @@ class AccountButton extends StatelessWidget {
           child: Center(
             child: TextButton(
               onPressed: () async {
-                await withSpinner(context.read<AuthenticationService>().signOut, context);
+                await withSpinner(context.read<AuthenticationService>().signOut);
                 navigatorKey.currentState?.pop();
               },
               child: const Text(
