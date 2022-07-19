@@ -20,7 +20,7 @@ class AuthenticationService {
   }
 
   Future<void> signIn({required String email, required String password}) async {
-    await withSpinner(() => FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password), useDarkOverlay: true);
+    await withSpinner(() => FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password), useDarkOverlay: true, timeout: 20000);
   }
 
   Future<UserCredential> signInWithGoogle() async {
@@ -41,14 +41,18 @@ class AuthenticationService {
   }
 
   Future<void> signUp({required String email, required String password}) async {
-    await withSpinner(() async {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-      await userCredential.user?.sendEmailVerification();
-    }, useDarkOverlay: true);
+    await withSpinner(
+      () async {
+        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+        userCredential.user!.sendEmailVerification(); // no need to await this
+      },
+      useDarkOverlay: true,
+      timeout: 20000,
+    );
   }
 
   Future<void> signOut() async {
-    await withSpinner(FirebaseAuth.instance.signOut, useDarkOverlay: true);
+    await withSpinner(FirebaseAuth.instance.signOut, useDarkOverlay: true, timeout: 10000);
   }
 
   Future<void> deleteAccount() async {
