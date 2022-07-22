@@ -208,7 +208,7 @@ class _UnauthenticatedState extends State<Unauthenticated> {
                                       });
                                     },
                                     child: Icon(
-                                      _obscured ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                                      _obscured ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                                       size: 24,
                                     ),
                                   ),

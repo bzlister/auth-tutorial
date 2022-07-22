@@ -24,12 +24,14 @@ class AuthenticationService {
   }
 
   Future<UserCredential> signInWithGoogle() async {
-    try {
-      // Trigger the authentication flow
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
+    // Trigger the authentication flow
+    GoogleSignInAccount? googleUser = await withException(GoogleSignIn().signIn)();
+    print('started');
+    return await call(() async {
       // Obtain the auth details from the request
       final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+      print("done");
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -39,11 +41,7 @@ class AuthenticationService {
 
       // Once signed in, return the UserCredential
       return await FirebaseAuth.instance.signInWithCredential(credential);
-    } on FirebaseAuthException catch (firebaseAuthException) {
-      throw ServiceException(code: firebaseAuthException.code);
-    } catch (_) {
-      throw ServiceException(code: 'unknown-error');
-    }
+    });
   }
 
   Future<void> signUp({required String email, required String password}) async {

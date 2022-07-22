@@ -41,7 +41,12 @@ class MyApp extends StatelessWidget {
                   child: Row(
                     children: [
                       IconButton(onPressed: () => ScaffoldMessenger.of(context).clearSnackBars(), icon: const Icon(Icons.close)),
-                      Text(errorMessage, style: const TextStyle(color: Colors.white, fontSize: 13)),
+                      Text(
+                        errorMessage,
+                        style: const TextStyle(color: Colors.white, fontSize: 13),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ],
                   ),
                 ),
