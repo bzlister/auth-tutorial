@@ -25,7 +25,10 @@ class ToDoListEntry extends StatelessWidget {
         value: task.completed,
         onChanged: (checked) async {
           _focusNode.unfocus();
-          await context.read<DatabaseService>().updateTask(id, Task(description: task.description, completed: checked!));
+          await context
+              .read<DatabaseService>()
+              .updateTask(id, Task(description: task.description, completed: checked!))
+              .catchError((error) => context.read<Function(String)>()(error.code));
         },
       ),
       contentPadding: EdgeInsets.zero,
@@ -39,7 +42,11 @@ class ToDoListEntry extends StatelessWidget {
               TextButton(
                 onPressed: () async {
                   navigatorKey.currentState?.pop();
-                  await context.read<DatabaseService>().deleteTask(id);
+                  await context.read<DatabaseService>().deleteTask(id).catchError(
+                        (error) => context.read<Function(String)>()(
+                          commonErrorHandlers(error.code),
+                        ),
+                      );
                 },
                 child: const Text("Delete"),
               ),
@@ -56,7 +63,11 @@ class ToDoListEntry extends StatelessWidget {
               controller: _controller,
               onSubmitted: (val) async {
                 if (val.isNotEmpty && val.length < 50) {
-                  await context.read<DatabaseService>().updateTask(id, Task(description: val, completed: task.completed));
+                  await context.read<DatabaseService>().updateTask(id, Task(description: val.trim(), completed: task.completed)).catchError(
+                        (error) => context.read<Function(String)>()(
+                          commonErrorHandlers(error.code),
+                        ),
+                      );
                 }
               },
               style: TextStyle(decoration: task.completed ? TextDecoration.lineThrough : null, color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),

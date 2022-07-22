@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
@@ -19,7 +18,6 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  late String? _serviceErrorCode;
   late bool _shouldValidateEmail;
   late bool _shouldValidatePassword;
   late bool _obscured;
@@ -31,7 +29,7 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
-  String getServiceErrorMessage(String code) {
+  String getErrorMessage(String code) {
     switch (code) {
       case "email-already-in-use":
         return "Account ${widget._emailController.text} is already in-use.";
@@ -42,13 +40,12 @@ class _SignUpState extends State<SignUp> {
       case "operation-not-allowed":
         return "Sorry, something went wrong on our end. Please try again later.";
       default:
-        return "Please check your network connection and try again.";
+        return commonErrorHandlers(code);
     }
   }
 
   @override
   void initState() {
-    _serviceErrorCode = null;
     _shouldValidateEmail = false;
     _shouldValidatePassword = false;
     _obscured = true;
@@ -65,31 +62,12 @@ class _SignUpState extends State<SignUp> {
           children: [
             const GoogleSignInButton(),
             const Divider(),
-            if (_serviceErrorCode != null) ...[
-              Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: MaterialBanner(content: Text(getServiceErrorMessage(_serviceErrorCode!)), backgroundColor: Colors.red.withOpacity(0.5), actions: [
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _serviceErrorCode = null;
-                      });
-                    },
-                    icon: const Icon(Icons.close),
-                  )
-                ]),
-              )
-            ],
             const SizedBox(height: 15),
             Focus(
               onFocusChange: (hasFocus) {
                 if (!hasFocus) {
                   setState(() {
                     _shouldValidateEmail = true;
-                  });
-                } else if (hasFocus && _serviceErrorCode != null) {
-                  setState(() {
-                    _serviceErrorCode = null;
                   });
                 }
               },
@@ -143,10 +121,6 @@ class _SignUpState extends State<SignUp> {
                 if (!hasFocus) {
                   setState(() {
                     _shouldValidatePassword = true;
-                  });
-                } else if (hasFocus && _serviceErrorCode != null) {
-                  setState(() {
-                    _serviceErrorCode = null;
                   });
                 }
               },
@@ -230,16 +204,17 @@ class _SignUpState extends State<SignUp> {
               ),
               onPressed: () async {
                 if (widget._emailValidationKey.currentState!.validate() && widget._passwordValidationKey.currentState!.validate()) {
-                  try {
-                    await context.read<AuthenticationService>().signUp(
-                          email: widget._emailController.text.trim(),
-                          password: widget._passwordController.text.trim(),
-                        );
-                  } on FirebaseAuthException catch (e) {
-                    setState(() {
-                      _serviceErrorCode = e.code;
-                    });
-                  }
+                  await context
+                      .read<AuthenticationService>()
+                      .signUp(
+                        email: widget._emailController.text.trim(),
+                        password: widget._passwordController.text.trim(),
+                      )
+                      .catchError(
+                        (error) => context.read<Function(String)>()(
+                          getErrorMessage(error.code),
+                        ),
+                      );
                 }
               },
               child: const Text("Create account"),

@@ -29,7 +29,11 @@ class AccountButton extends StatelessWidget {
           child: Center(
             child: TextButton(
               onPressed: () async {
-                await context.read<AuthenticationService>().signOut();
+                await context.read<AuthenticationService>().signOut().catchError(
+                      (error) => context.read<Function(String)>()(
+                        commonErrorHandlers(error.code),
+                      ),
+                    );
                 navigatorKey.currentState?.pop();
               },
               child: const Text(

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 
@@ -20,7 +19,6 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  late String? _serviceErrorCode;
   late bool _shouldValidateEmail;
   late bool _shouldValidatePassword;
   late bool _obscured;
@@ -32,7 +30,7 @@ class _SignInState extends State<SignIn> {
     super.dispose();
   }
 
-  String getServiceErrorMessage(String code) {
+  String getErrorMessage(String? code) {
     switch (code) {
       case "invalid-email":
         return "The email you provided is invalid. Please try again with a different email address.";
@@ -43,13 +41,12 @@ class _SignInState extends State<SignIn> {
       case "wrong-password":
         return "The password you've entered is incorrect.";
       default:
-        return "Please check your network connection and try again.";
+        return commonErrorHandlers(code);
     }
   }
 
   @override
   void initState() {
-    _serviceErrorCode = null;
     _shouldValidateEmail = false;
     _shouldValidatePassword = false;
     _obscured = true;
@@ -67,37 +64,12 @@ class _SignInState extends State<SignIn> {
             children: [
               const GoogleSignInButton(),
               const Divider(),
-              if (_serviceErrorCode != null) ...[
-                Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: MaterialBanner(
-                    content: Text(
-                      getServiceErrorMessage(_serviceErrorCode!),
-                    ),
-                    backgroundColor: Colors.red.withOpacity(0.5),
-                    actions: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _serviceErrorCode = null;
-                          });
-                        },
-                        icon: const Icon(Icons.close),
-                      )
-                    ],
-                  ),
-                ),
-              ],
               const SizedBox(height: 15),
               Focus(
                 onFocusChange: (hasFocus) {
                   if (!hasFocus) {
                     setState(() {
                       _shouldValidateEmail = true;
-                    });
-                  } else if (hasFocus && _serviceErrorCode != null) {
-                    setState(() {
-                      _serviceErrorCode = null;
                     });
                   }
                 },
@@ -142,10 +114,6 @@ class _SignInState extends State<SignIn> {
                   if (!hasFocus) {
                     setState(() {
                       _shouldValidatePassword = true;
-                    });
-                  } else if (hasFocus && _serviceErrorCode != null) {
-                    setState(() {
-                      _serviceErrorCode = null;
                     });
                   }
                 },
@@ -208,16 +176,17 @@ class _SignInState extends State<SignIn> {
                 ),
                 onPressed: () async {
                   if (widget._emailValidationKey.currentState!.validate() && widget._passwordValidationKey.currentState!.validate()) {
-                    try {
-                      await context.read<AuthenticationService>().signIn(
-                            email: widget._emailController.text.trim(),
-                            password: widget._passwordController.text.trim(),
-                          );
-                    } on FirebaseAuthException catch (e) {
-                      setState(() {
-                        _serviceErrorCode = e.code;
-                      });
-                    }
+                    await context
+                        .read<AuthenticationService>()
+                        .signIn(
+                          email: widget._emailController.text.trim(),
+                          password: widget._passwordController.text.trim(),
+                        )
+                        .catchError(
+                          (error) => context.read<Function(String)>()(
+                            getErrorMessage(error.code),
+                          ),
+                        );
                   }
                 },
                 child: const Text("Log in"),

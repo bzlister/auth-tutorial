@@ -13,7 +13,9 @@ Future<T> Function() withSpinner<T>(Future<T> Function() fn, int timeout) {
       indicator: const CircularProgressIndicator(),
     );
     try {
-      return await fn().timeout(Duration(milliseconds: timeout), onTimeout: () => throw TimeoutException("Timeout when waiting for network"));
+      return await fn().timeout(Duration(milliseconds: timeout), onTimeout: () {
+        throw TimeoutException("Timeout when waiting for network");
+      });
     } finally {
       EasyLoading.dismiss();
     }
@@ -21,14 +23,31 @@ Future<T> Function() withSpinner<T>(Future<T> Function() fn, int timeout) {
 }
 
 Future<T> Function() withException<T>(Future<T> Function() fn) {
-  return () => fn()
-      .catchError((timeoutException) => throw ServiceException(code: "timeout"), test: (e) => e is TimeoutException)
-      .catchError((firebaseAuthException) => throw ServiceException(code: firebaseAuthException.code), test: (e) => e is FirebaseAuthException)
-      .catchError((exception) => throw ServiceException(code: "unknown-error"));
+  return () async {
+    try {
+      return await fn();
+    } on TimeoutException catch (_) {
+      throw ServiceException(code: "timeout");
+    } on FirebaseAuthException catch (firebaseAuthException) {
+      throw ServiceException(code: firebaseAuthException.code);
+    } catch (err) {
+      throw ServiceException(code: "unknown-error");
+    }
+  };
 }
 
 Future<T> call<T>(Future<T> Function() fn, {int timeout = 5000}) async {
   return await withException(withSpinner(fn, timeout))();
+}
+
+String commonErrorHandlers(String? errorCode) {
+  switch (errorCode) {
+    case "timeout":
+      return "Please check your network connection and try again.";
+    case "unknown-error":
+    default:
+      return "Sorry, that didn't work. Please try again later.";
+  }
 }
 
 class ServiceException implements Exception {

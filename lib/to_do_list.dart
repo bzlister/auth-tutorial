@@ -23,7 +23,7 @@ class ToDoList extends StatelessWidget {
               stream: context.read<DatabaseService>().taskList,
               builder: (context, state) {
                 if (state.hasError) {
-                  return const Text("We've encountered an error. Please try again later.");
+                  context.read<Function(String)>()("We've encountered an error. Please try again later.");
                 }
                 List<Record<Task>> tasks = state.data ?? <Record<Task>>[];
                 return ListView.builder(
@@ -38,7 +38,16 @@ class ToDoList extends StatelessWidget {
             controller: _controller,
             onSubmitted: (val) async {
               if (val.isNotEmpty && val.length < 50) {
-                await context.read<DatabaseService>().addTask(Task(description: val));
+                await context
+                    .read<DatabaseService>()
+                    .addTask(Task(
+                      description: val.trim(),
+                    ))
+                    .catchError(
+                      (error) => context.read<Function(String)>()(
+                        commonErrorHandlers(error.code),
+                      ),
+                    );
                 _controller.clear();
               }
             },

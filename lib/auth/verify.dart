@@ -63,7 +63,7 @@ class _VerifyState extends State<Verify> {
                   Padding(
                     padding: const EdgeInsets.only(top: 10, bottom: 10),
                     child: Text(
-                      'We\'ve sent a verification email to ${widget.email}. Please click the link in the email body to get started!',
+                      "We've sent a verification email to ${widget.email}. Please click the link in the email body to get started!",
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -71,7 +71,11 @@ class _VerifyState extends State<Verify> {
                   TextButton(
                     child: const Text("Resend verification link"),
                     onPressed: () async {
-                      await context.read<AuthenticationService>().sendVerificationEmail();
+                      await context.read<AuthenticationService>().sendVerificationEmail().catchError(
+                            (error) => context.read<Function(String)>()(
+                              commonErrorHandlers(error.code),
+                            ),
+                          );
                       _checkVerifiedLoop.reset();
                     },
                   ),
@@ -83,7 +87,11 @@ class _VerifyState extends State<Verify> {
         TextButton(
           onPressed: () async {
             _checkVerifiedLoop.cancel();
-            await context.read<AuthenticationService>().signOut();
+            await context.read<AuthenticationService>().signOut().catchError(
+                  (error) => context.read<Function(String)>()(
+                    commonErrorHandlers(error.code),
+                  ),
+                );
           },
           child: const Text("Sign out"),
         )
