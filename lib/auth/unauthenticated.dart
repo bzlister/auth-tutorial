@@ -258,15 +258,7 @@ class _UnauthenticatedState extends State<Unauthenticated> {
                           child: _mode == Mode.signUp ? const Text("Create account") : const Text("Log in"),
                         ),
                         if (_mode == Mode.signIn) ...[
-                          Align(
-                            alignment: Alignment.center,
-                            child: TextButton(
-                              child: const Text("Forgot your password?"),
-                              onPressed: () {
-                                showDialog(context: context, builder: (context) => ResetPassword());
-                              },
-                            ),
-                          ),
+                          Align(alignment: Alignment.center, child: ResetPassword()),
                         ]
                       ],
                     ),
