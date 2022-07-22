@@ -26,7 +26,7 @@ class AuthenticationWrapper extends StatelessWidget {
                       child: Home(email: user.email!),
                     )
                   : Verify(email: user.email!)
-              : const Unauthenticated();
+              : Unauthenticated();
         },
       ),
     );
