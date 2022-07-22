@@ -8,7 +8,7 @@ class AuthenticationService {
   final StreamController<User?> _streamController;
 
   AuthenticationService() : _streamController = StreamController() {
-    FirebaseAuth.instance.authStateChanges().handleError((err) => print('auth service error ${err}')).listen((event) {
+    FirebaseAuth.instance.authStateChanges().listen((event) {
       _streamController.add(event);
     });
   }
@@ -20,59 +20,63 @@ class AuthenticationService {
   }
 
   Future<void> signIn({required String email, required String password}) async {
-    await withSpinner(() => FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password), useDarkOverlay: true, timeout: 20000);
+    await call(() => FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password), timeout: 10000);
   }
 
   Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
 
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+      // Once signed in, return the UserCredential
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } on FirebaseAuthException catch (firebaseAuthException) {
+      throw ServiceException(code: firebaseAuthException.code);
+    } catch (_) {
+      throw ServiceException(code: 'unknown-error');
+    }
   }
 
   Future<void> signUp({required String email, required String password}) async {
-    await withSpinner(
-      () async {
-        UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
-        userCredential.user!.sendEmailVerification(); // no need to await this
-      },
-      useDarkOverlay: true,
-      timeout: 20000,
-    );
+    await call(() async {
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
+      userCredential.user!.sendEmailVerification(); // no need to await this
+    }, timeout: 10000);
   }
 
   Future<void> signOut() async {
-    await withSpinner(FirebaseAuth.instance.signOut, useDarkOverlay: true, timeout: 10000);
+    await call(FirebaseAuth.instance.signOut);
   }
 
   Future<void> deleteAccount() async {
     if (FirebaseAuth.instance.currentUser != null) {
-      await withSpinner(FirebaseAuth.instance.currentUser!.delete, useDarkOverlay: true);
+      await call(FirebaseAuth.instance.currentUser!.delete);
     }
   }
 
   Future<void> sendVerificationEmail() async {
     if (FirebaseAuth.instance.currentUser != null) {
-      await withSpinner(FirebaseAuth.instance.currentUser!.sendEmailVerification);
+      await call(FirebaseAuth.instance.currentUser!.sendEmailVerification);
     }
   }
 
   Future<void> sendResetPasswordEmail(String email) async {
-    await withSpinner(() => FirebaseAuth.instance.sendPasswordResetEmail(email: email));
+    await call(() => FirebaseAuth.instance.sendPasswordResetEmail(email: email));
   }
 
   Future<User?> reload() async {
-    await FirebaseAuth.instance.currentUser?.reload();
+    if (FirebaseAuth.instance.currentUser != null) {
+      await withException(FirebaseAuth.instance.currentUser!.reload)();
+    }
     return FirebaseAuth.instance.currentUser;
   }
 }

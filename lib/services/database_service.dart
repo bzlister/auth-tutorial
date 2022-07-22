@@ -13,20 +13,18 @@ class DatabaseService {
   late Stream<List<Record<Task>>> taskList;
 
   DatabaseService({required User user}) : _databaseReference = FirebaseDatabase.instance.ref("users/${user.uid}") {
-    taskList = _databaseReference.onValue
-        .map((event) => event.snapshot.children.whereNotNull().map((e) => Record<Task>.fromJson(e, Task.fromJson)).toList())
-        .handleError((err) => print('database service error ${err}'));
+    taskList = _databaseReference.onValue.map((event) => event.snapshot.children.whereNotNull().map((e) => Record<Task>.fromJson(e, Task.fromJson)).toList());
   }
 
   Future<void> addTask(Task task) async {
-    await withSpinner(() => _databaseReference.push().set(task.toJson()));
+    await call(() => _databaseReference.push().set(task.toJson()));
   }
 
   Future<void> updateTask(String id, Task task) async {
-    await withSpinner(() => _databaseReference.update({id: task.toJson()}));
+    await call(() => _databaseReference.update({id: task.toJson()}));
   }
 
   Future<void> deleteTask(String id) async {
-    await withSpinner(() => _databaseReference.update({id: null}));
+    await call(() => _databaseReference.update({id: null}));
   }
 }
