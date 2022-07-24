@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,12 +28,9 @@ class AuthenticationService {
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
     GoogleSignInAccount? googleUser = await withException(GoogleSignIn().signIn)();
-    print('started');
     return await call(() async {
       // Obtain the auth details from the request
       final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-      print("done");
 
       // Create a new credential
       final credential = GoogleAuthProvider.credential(
@@ -53,7 +51,10 @@ class AuthenticationService {
   }
 
   Future<void> signOut() async {
-    await call(FirebaseAuth.instance.signOut);
+    await call(() async {
+      await GoogleSignIn().signOut();
+      await FirebaseAuth.instance.signOut();
+    });
   }
 
   Future<void> deleteAccount() async {

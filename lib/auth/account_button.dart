@@ -16,12 +16,12 @@ class AccountButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton(
       offset: Offset.fromDirection(0.75 * pi, 20),
-      child: const Icon(Icons.account_circle),
+      child: const Icon(Icons.account_circle, size: 40),
       itemBuilder: (context) => [
         PopupMenuItem(
           height: 0,
           padding: EdgeInsets.zero,
-          child: Center(child: Text("Signed in as $email", style: const TextStyle(fontSize: 12))),
+          child: Center(child: Text("Signed in as $email", style: const TextStyle(fontSize: 14))),
         ),
         PopupMenuItem(
           height: 0,
@@ -38,7 +38,7 @@ class AccountButton extends StatelessWidget {
               },
               child: const Text(
                 "Sign out",
-                style: TextStyle(fontSize: 12),
+                style: TextStyle(fontSize: 14),
               ),
             ),
           ),
