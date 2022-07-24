@@ -45,30 +45,6 @@ class AuthenticationService {
     });
   }
 
-  Future<UserCredential> signInWithFacebook() async {
-    try {
-      // Trigger the sign-in flow
-      final LoginResult loginResult = await FacebookAuth.instance.login();
-      print('started');
-
-      // Create a credential from the access token
-      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
-
-      // Once signed in, return the UserCredential
-      try {
-        return await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-      } on FirebaseAuthException catch (firebaseAuthException) {
-        if (firebaseAuthException.code == "account-exists-with-different-credential") {
-        } else {
-          rethrow;
-        }
-      }
-    } catch (ex) {
-      print(ex);
-      throw ex;
-    }
-  }
-
   Future<void> signUp({required String email, required String password}) async {
     await call(() async {
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
