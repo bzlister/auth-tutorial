@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -42,6 +43,30 @@ class AuthenticationService {
       // Once signed in, return the UserCredential
       return await FirebaseAuth.instance.signInWithCredential(credential);
     });
+  }
+
+  Future<UserCredential> signInWithFacebook() async {
+    try {
+      // Trigger the sign-in flow
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+      print('started');
+
+      // Create a credential from the access token
+      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+      // Once signed in, return the UserCredential
+      try {
+        return await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+      } on FirebaseAuthException catch (firebaseAuthException) {
+        if (firebaseAuthException.code == "account-exists-with-different-credential") {
+        } else {
+          rethrow;
+        }
+      }
+    } catch (ex) {
+      print(ex);
+      throw ex;
+    }
   }
 
   Future<void> signUp({required String email, required String password}) async {

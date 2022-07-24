@@ -80,6 +80,11 @@ class _UnauthenticatedState extends State<Unauthenticated> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const GoogleSignInButton(),
+                        ElevatedButton(
+                            onPressed: () async {
+                              await context.read<AuthenticationService>().signInWithFacebook();
+                            },
+                            child: const Text("Sign in with Facebook")),
                         const Divider(),
                         const SizedBox(height: 15),
                         Focus(
