@@ -2,6 +2,8 @@
 
 A template for using Flutter + Firebase to authenticate users.
 
+<img width="269" alt="flutter_auth" src="https://github.com/user-attachments/assets/7fcd208d-fc1a-48c3-8926-60cb640f98ae" />
+
 ## Setup
 
 A few resources to get you started if this is your first Flutter project:
