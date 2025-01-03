@@ -1,14 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 import 'authentication_service.dart';
 
 class ResetPassword extends StatefulWidget {
   final _emailController = TextEditingController();
   final _emailValidationKey = GlobalKey<FormState>();
-  final _btnController = RoundedLoadingButtonController();
 
   ResetPassword({Key? key}) : super(key: key);
 
@@ -134,7 +132,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                     ),
                   ),
                 ),
-              ),
+              ),/*
               Padding(
                 padding: const EdgeInsets.only(top: 5),
                 child: RoundedLoadingButton(
@@ -161,7 +159,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                   },
                   child: const Text("Send"),
                 ),
-              ),
+              ),*/
             ] else if (_status == Status.emailSent) ...[
               Text("We've sent an email containing a link to reset your password to ${widget._emailController.text.trim()}"),
               ElevatedButton(
